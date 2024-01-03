@@ -19,12 +19,13 @@ package com.example.apparchitecturedao.database
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 
 @Dao
 interface SleepDatabaseDao{
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(night: SleepNight)
 
     @Query("Delete from sleep_tracking_table")
