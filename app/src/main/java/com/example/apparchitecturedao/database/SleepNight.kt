@@ -22,10 +22,16 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "sleep_tracking_table")
 data class SleepNight(
+
     @PrimaryKey(autoGenerate = true)
     var nightId: Long = 1L,
+
     @ColumnInfo("sleep_start_time_in_milli_sec")
     val startTime: Long = System.currentTimeMillis(),
+
+    @ColumnInfo("sleep_end_time_in_milli_sec")
     var endTime: Long = startTime,
+
+    @ColumnInfo("quality_rating")
     var sleepRating: Int = -1
 )

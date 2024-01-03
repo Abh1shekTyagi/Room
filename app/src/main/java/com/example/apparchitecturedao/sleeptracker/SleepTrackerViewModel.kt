@@ -39,6 +39,9 @@ class SleepTrackerViewModel(
 
     private val nights = database.getAllNight()
 
+    private val _showSnackBar = MutableLiveData<Boolean?>()
+    val showSnackBar: LiveData<Boolean?> = _showSnackBar
+
     val myNights = nights.map { nights ->
         formatNights(nights, application.resources)
     }
@@ -46,8 +49,20 @@ class SleepTrackerViewModel(
     private var _navigateToSleepQuality = MutableLiveData<SleepNight?>()
     val navigateToSleepQuality: LiveData<SleepNight?> = _navigateToSleepQuality
 
-    fun navigationDone(){
+    fun navigationDone() {
         _navigateToSleepQuality.value = null
+    }
+
+    val startButtonVisibility = tonight.map {
+        it == null
+    }
+
+    val stopButtonVisibility = tonight.map {
+        it != null
+    }
+
+    val clearButtonVisibility = nights.map {
+        it.isNotEmpty()
     }
 
     init {
@@ -72,22 +87,28 @@ class SleepTrackerViewModel(
         viewModelScope.launch {
             clear()
             tonight.postValue(null)
+            _showSnackBar.postValue(true)
         }
     }
 
-    private suspend fun clear(){
+    fun doneShowingSnackBar(){
+        _showSnackBar.value = null
+    }
+
+    private suspend fun clear() {
         database.clear()
     }
+
     fun onStartTracking() {
         viewModelScope.launch {
-            tonight.postValue(SleepNight())
-            tonight.value?.let { insert(it) }
+            insert(SleepNight())
         }
     }
 
 
-    private suspend fun insert(night: SleepNight){
+    private suspend fun insert(night: SleepNight) {
         database.insert(night)
+        tonight.value = night
     }
 
     fun onStopTracking() {
@@ -99,7 +120,7 @@ class SleepTrackerViewModel(
         }
     }
 
-    private suspend fun update(night: SleepNight){
+    private suspend fun update(night: SleepNight) {
         database.update(night)
     }
 }
