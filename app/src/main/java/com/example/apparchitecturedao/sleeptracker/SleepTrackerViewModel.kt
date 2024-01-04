@@ -91,7 +91,7 @@ class SleepTrackerViewModel(
         }
     }
 
-    fun doneShowingSnackBar(){
+    fun doneShowingSnackBar() {
         _showSnackBar.value = null
     }
 
@@ -108,7 +108,7 @@ class SleepTrackerViewModel(
 
     private suspend fun insert(night: SleepNight) {
         database.insert(night)
-        tonight.value = night
+        tonight.value = getTonightFromDatabase()
     }
 
     fun onStopTracking() {
