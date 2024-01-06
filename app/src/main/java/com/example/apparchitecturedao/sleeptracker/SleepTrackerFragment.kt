@@ -17,7 +17,6 @@
 package com.example.apparchitecturedao.sleeptracker
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.apparchitecturedao.R
 import com.example.apparchitecturedao.database.SleepDatabase
 import com.example.apparchitecturedao.databinding.FragmentSleepTrackerBinding
@@ -40,6 +40,7 @@ class SleepTrackerFragment : Fragment() {
     private lateinit var binding: FragmentSleepTrackerBinding
     private lateinit var viewModel: SleepTrackerViewModel
     private lateinit var viewModelFactory: SleepTrackerViewModelFactory
+    private lateinit var adapter: SleepNightAdapter
     /**
      * Called when the Fragment is ready to display content to the screen.
      *
@@ -54,6 +55,18 @@ class SleepTrackerFragment : Fragment() {
         viewModel = ViewModelProvider(this,viewModelFactory).get()
 //        viewModel = ViewModelProvider(this,viewModelFactory)[SleepTrackerViewModel::class.java]
         binding = FragmentSleepTrackerBinding.inflate(inflater, container, false)
+        adapter = SleepNightAdapter(SleepClickListener {
+            viewModel.navigateToSleepDataQuality(it)
+        })
+        val manager = GridLayoutManager(context,3)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) =  when (position) {
+                0 -> 3
+                else -> 1
+            }
+        }
+        binding.rvSleepNights.layoutManager = manager
+        binding.rvSleepNights.adapter = adapter
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         return binding.root
@@ -67,7 +80,6 @@ class SleepTrackerFragment : Fragment() {
     private fun initObserver() {
         viewModel.navigateToSleepQuality.observe(viewLifecycleOwner){
             it?.let {
-                Log.d("Abhishek", "The id is ${it}")
                 findNavController().navigate(SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(it.nightId))
                 viewModel.navigationDone()
             }
@@ -80,6 +92,17 @@ class SleepTrackerFragment : Fragment() {
                     Snackbar.LENGTH_SHORT)
                     .show()
                 viewModel.doneShowingSnackBar()
+            }
+        }
+
+        viewModel.nights.observe(viewLifecycleOwner){
+            adapter.addHeaderAndSubmitList(it)
+        }
+
+        viewModel.navigateToSleepNight.observe(viewLifecycleOwner){
+            it?.let {
+                findNavController().navigate(SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepDetail(it.nightId))
+                viewModel.onSleepDataQualityNavigated()
             }
         }
     }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="clickListner"
+            type="com.example.apparchitecturedao.sleeptracker.SleepClickListener" />
+        <variable
+            name="sleep"
+            type="com.example.apparchitecturedao.database.SleepNight" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{()->clickListner.onClick(sleep)}">
+
+        <ImageView
+            android:id="@+id/image_icon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:contentDescription="@string/image_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:sleepImage="@{sleep}"
+            tool:src="@drawable/ic_sleep_0" />
+
+        <TextView
+            android:id="@id/sleep_quality_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5dp"
+            android:layout_marginBottom="@dimen/_20dp"
+            android:gravity="center_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image_icon"
+            app:sleepQualityFormatted="@{sleep}"
+            tool:text="@string/four_pretty_good" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
